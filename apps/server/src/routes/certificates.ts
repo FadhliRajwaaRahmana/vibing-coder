@@ -13,10 +13,10 @@ import { eq, and, count } from "drizzle-orm";
 import { authMiddleware } from "../middleware/auth.js";
 import { nanoid } from "nanoid";
 
-const app = new Hono();
+const app = new Hono<{ Variables: { user: any; session: any } }>();
 
 app.post("/generate/:courseId", authMiddleware, async (c) => {
-  const courseId = c.req.param("courseId");
+  const courseId = c.req.param("courseId")!;
   const userId = c.get("user").id;
 
   const existing = await db.query.certificates.findFirst({
@@ -83,7 +83,7 @@ app.get("/my", authMiddleware, async (c) => {
 });
 
 app.get("/verify/:certNumber", async (c) => {
-  const certNumber = c.req.param("certNumber");
+  const certNumber = c.req.param("certNumber")!;
 
   const cert = await db
     .select({

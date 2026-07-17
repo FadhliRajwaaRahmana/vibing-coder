@@ -9,10 +9,10 @@ import {
 import { eq, and, asc, desc } from "drizzle-orm";
 import { authMiddleware } from "../middleware/auth.js";
 
-const app = new Hono();
+const app = new Hono<{ Variables: { user: any; session: any } }>();
 
 app.get("/lesson/:lessonId", async (c) => {
-  const lessonId = c.req.param("lessonId");
+  const lessonId = c.req.param("lessonId")!;
 
   const quiz = await db.query.quizzes.findFirst({
     where: eq(quizzes.lessonId, lessonId),
@@ -42,7 +42,7 @@ app.get("/lesson/:lessonId", async (c) => {
 });
 
 app.post("/:quizId/submit", authMiddleware, async (c) => {
-  const quizId = c.req.param("quizId");
+  const quizId = c.req.param("quizId")!;
   const userId = c.get("user").id;
   const body = await c.req.json<{
     answers: { questionId: string; selectedIndex: number }[];
@@ -92,7 +92,7 @@ app.post("/:quizId/submit", authMiddleware, async (c) => {
 });
 
 app.get("/:quizId/attempts", authMiddleware, async (c) => {
-  const quizId = c.req.param("quizId");
+  const quizId = c.req.param("quizId")!;
   const userId = c.get("user").id;
 
   const attempts = await db

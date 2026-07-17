@@ -4,7 +4,7 @@ import { courses, lessons, userProgress } from "../db/schema.js";
 import { eq, and, asc, count } from "drizzle-orm";
 import { authMiddleware } from "../middleware/auth.js";
 
-const app = new Hono();
+const app = new Hono<{ Variables: { user: any; session: any } }>();
 
 app.get("/", async (c) => {
   const allCourses = await db
@@ -27,7 +27,7 @@ app.get("/", async (c) => {
 });
 
 app.get("/:slug", async (c) => {
-  const slug = c.req.param("slug");
+  const slug = c.req.param("slug")!;
   const course = await db.query.courses.findFirst({
     where: eq(courses.slug, slug),
   });
@@ -44,7 +44,8 @@ app.get("/:slug", async (c) => {
 });
 
 app.get("/:slug/lessons/:lessonSlug", async (c) => {
-  const { slug, lessonSlug } = c.req.param();
+  const slug = c.req.param("slug")!;
+  const lessonSlug = c.req.param("lessonSlug")!;
 
   const course = await db.query.courses.findFirst({
     where: eq(courses.slug, slug),
@@ -69,7 +70,8 @@ app.get("/:slug/lessons/:lessonSlug", async (c) => {
 });
 
 app.post("/:slug/lessons/:lessonSlug/complete", authMiddleware, async (c) => {
-  const { slug, lessonSlug } = c.req.param();
+  const slug = c.req.param("slug")!;
+  const lessonSlug = c.req.param("lessonSlug")!;
   const userId = c.get("user").id;
 
   const course = await db.query.courses.findFirst({
@@ -102,7 +104,7 @@ app.post("/:slug/lessons/:lessonSlug/complete", authMiddleware, async (c) => {
 });
 
 app.get("/:slug/progress", authMiddleware, async (c) => {
-  const slug = c.req.param("slug");
+  const slug = c.req.param("slug")!;
   const userId = c.get("user").id;
 
   const course = await db.query.courses.findFirst({

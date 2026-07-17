@@ -10,7 +10,7 @@ import {
 import { eq, and, count, sql } from "drizzle-orm";
 import { authMiddleware } from "../middleware/auth.js";
 
-const app = new Hono();
+const app = new Hono<{ Variables: { user: any; session: any } }>();
 
 app.use("*", authMiddleware);
 

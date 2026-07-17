@@ -4,10 +4,10 @@ import { discussions, user } from "../db/schema.js";
 import { eq, and, asc, isNull } from "drizzle-orm";
 import { authMiddleware } from "../middleware/auth.js";
 
-const app = new Hono();
+const app = new Hono<{ Variables: { user: any; session: any } }>();
 
 app.get("/course/:courseId", async (c) => {
-  const courseId = c.req.param("courseId");
+  const courseId = c.req.param("courseId")!;
   const lessonId = c.req.query("lessonId");
 
   const condition = lessonId
@@ -68,7 +68,7 @@ app.post("/", authMiddleware, async (c) => {
 });
 
 app.delete("/:id", authMiddleware, async (c) => {
-  const id = c.req.param("id");
+  const id = c.req.param("id")!;
   const userId = c.get("user").id;
 
   const post = await db.query.discussions.findFirst({
