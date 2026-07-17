@@ -1,0 +1,29 @@
+{
+  "name": "@kelas/server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:seed": "tsx src/db/seed.ts"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.14.1",
+    "better-auth": "^1.2.8",
+    "drizzle-orm": "^0.44.2",
+    "hono": "^4.7.10",
+    "pg": "^8.16.0",
+    "dotenv": "^16.5.0",
+    "nanoid": "^5.1.5",
+    "marked": "^15.0.8"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.15.4",
+    "drizzle-kit": "^0.31.3",
+    "tsx": "^4.19.4",
+    "typescript": "^5.7.3"
+  }
+}

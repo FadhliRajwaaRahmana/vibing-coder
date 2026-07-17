@@ -1,0 +1,21 @@
+{
+  "name": "kelas-fullstack",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:web\"",
+    "dev:server": "npm -w apps/server run dev",
+    "dev:web": "npm -w apps/web run dev",
+    "build": "npm -w apps/web run build",
+    "db:generate": "npm -w apps/server run db:generate",
+    "db:migrate": "npm -w apps/server run db:migrate",
+    "db:seed": "npm -w apps/server run db:seed"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "typescript": "^5.7.3"
+  }
+}
