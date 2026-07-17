@@ -5,6 +5,7 @@ import { Footer } from "@/components/footer";
 import { useSession } from "@/lib/auth";
 import LenisProvider from "@/components/smooth-scroll";
 import { useEffect } from "react";
+import { Toaster } from "sonner";
 import LandingPage from "@/pages/landing";
 import LoginPage from "@/pages/login";
 import RegisterPage from "@/pages/register";
@@ -103,6 +104,16 @@ export default function App() {
           <AppRoutes />
         </LenisProvider>
       </BrowserRouter>
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          style: {
+            fontFamily: "inherit",
+          },
+        }}
+        richColors
+        closeButton
+      />
     </QueryClientProvider>
   );
 }

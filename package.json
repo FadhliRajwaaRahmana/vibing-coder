@@ -1,6 +1,7 @@
 {
   "name": "kelas-fullstack",
   "private": true,
+  "type": "module",
   "workspaces": [
     "apps/*",
     "packages/*"
