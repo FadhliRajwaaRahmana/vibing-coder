@@ -1,15 +1,23 @@
-module.exports = function handler(req, res) {
-  res.status(200).json({
-    status: "ok",
-    timestamp: new Date().toISOString(),
-    node: process.version,
-    env: {
-      DB_HOST: !!process.env.DB_HOST,
-      DB_NAME: process.env.DB_NAME || "(not set)",
-      BETTER_AUTH_SECRET: !!process.env.BETTER_AUTH_SECRET,
-      BETTER_AUTH_URL: process.env.BETTER_AUTH_URL || "(not set)",
-      FRONTEND_URL: process.env.FRONTEND_URL || "(not set)",
-      VERCEL: process.env.VERCEL || "(not set)",
-    },
-  });
+let listener;
+
+module.exports = async function handler(req, res) {
+  if (!listener) {
+    try {
+      const { getRequestListener } = await import("@hono/node-server");
+      const { default: app } = await import("../apps/server/src/index.js");
+      listener = getRequestListener(app.fetch.bind(app));
+    } catch (e) {
+      res.statusCode = 500;
+      res.setHeader("Content-Type", "application/json");
+      res.end(
+        JSON.stringify({
+          error: "Server initialization failed",
+          message: e.message,
+          stack: e.stack ? e.stack.split("\n").slice(0, 8) : [],
+        })
+      );
+      return;
+    }
+  }
+  return listener(req, res);
 };
