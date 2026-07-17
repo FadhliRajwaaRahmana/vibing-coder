@@ -32,8 +32,11 @@ app.route("/api/dashboard", dashboardRoutes);
 
 app.get("/api/health", (c) => c.json({ status: "ok" }));
 
-const port = Number(process.env.PORT) || 3000;
+export default app;
 
-serve({ fetch: app.fetch, port }, () => {
-  console.log(`Server running on http://localhost:${port}`);
-});
+if (!process.env.VERCEL) {
+  const port = Number(process.env.PORT) || 3000;
+  serve({ fetch: app.fetch, port }, () => {
+    console.log(`Server running on http://localhost:${port}`);
+  });
+}
