@@ -10,6 +10,7 @@ import discussionsRoutes from "./routes/discussions.js";
 import quizzesRoutes from "./routes/quizzes.js";
 import certificatesRoutes from "./routes/certificates.js";
 import dashboardRoutes from "./routes/dashboard.js";
+import swaggerRoutes from "./routes/swagger.js";
 
 const app = new Hono();
 
@@ -29,6 +30,7 @@ app.route("/api/discussions", discussionsRoutes);
 app.route("/api/quizzes", quizzesRoutes);
 app.route("/api/certificates", certificatesRoutes);
 app.route("/api/dashboard", dashboardRoutes);
+app.route("/api/docs", swaggerRoutes);
 
 app.get("/api/health", (c) => c.json({ status: "ok" }));
 

@@ -12,13 +12,14 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.14.1",
+    "@hono/swagger-ui": "^0.6.1",
     "better-auth": "^1.2.8",
+    "dotenv": "^16.5.0",
     "drizzle-orm": "^0.45.2",
     "hono": "^4.7.10",
-    "pg": "^8.16.0",
-    "dotenv": "^16.5.0",
+    "marked": "^15.0.8",
     "nanoid": "^5.1.5",
-    "marked": "^15.0.8"
+    "pg": "^8.16.0"
   },
   "devDependencies": {
     "@types/pg": "^8.15.4",
