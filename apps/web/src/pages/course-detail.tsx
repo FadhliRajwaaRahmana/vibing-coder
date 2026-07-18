@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { Link, useParams } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,10 +18,13 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
+import { toast } from "sonner";
 
 export default function CourseDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const { data: session } = useSession();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { data: course, isLoading } = useQuery({
     queryKey: ["course", slug],
@@ -33,6 +36,22 @@ export default function CourseDetailPage() {
     queryKey: ["progress", slug],
     queryFn: () => api.courses.getProgress(slug!),
     enabled: !!slug && !!session?.user,
+  });
+
+  const certMutation = useMutation({
+    mutationFn: (courseId: string) => api.certificates.generate(courseId),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["my-certificates"] });
+      toast.success("Sertifikat berhasil dibuat!", {
+        description: `Nomor: ${data.certificateNumber}`,
+      });
+      navigate("/dashboard/certificates");
+    },
+    onError: (error: Error) => {
+      toast.error("Gagal membuat sertifikat", {
+        description: error.message,
+      });
+    },
   });
 
   if (isLoading) {
@@ -201,12 +220,19 @@ export default function CourseDetailPage() {
                   </Button>
                 )}
 
-                {progressPercent === 100 && (
-                  <Button variant="outline" className="w-full gap-2" asChild>
-                    <Link to={`/courses/${slug}/certificate`}>
+                {progress?.completed === progress?.total && progress?.total > 0 && (
+                  <Button
+                    variant="outline"
+                    className="w-full gap-2"
+                    onClick={() => certMutation.mutate(course.id)}
+                    disabled={certMutation.isPending}
+                  >
+                    {certMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
                       <GraduationCap className="h-4 w-4" />
-                      Ambil Sertifikat
-                    </Link>
+                    )}
+                    Ambil Sertifikat
                   </Button>
                 )}
               </CardContent>

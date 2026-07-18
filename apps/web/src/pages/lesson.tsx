@@ -14,9 +14,11 @@ import {
   Loader2,
   BookOpen,
   MessageSquare,
+  GraduationCap,
 } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 
 export default function LessonPage() {
   const { slug, lessonSlug } = useParams<{ slug: string; lessonSlug: string }>();
@@ -41,6 +43,27 @@ export default function LessonPage() {
     mutationFn: () => api.courses.completeLesson(slug!, lessonSlug!),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["progress", slug] });
+    },
+    onError: (error: Error) => {
+      toast.error("Gagal menandai selesai", {
+        description: error.message,
+      });
+    },
+  });
+
+  const certMutation = useMutation({
+    mutationFn: (courseId: string) => api.certificates.generate(courseId),
+    onSuccess: (data: any) => {
+      queryClient.invalidateQueries({ queryKey: ["my-certificates"] });
+      toast.success("Sertifikat berhasil dibuat!", {
+        description: `Nomor: ${data.certificateNumber}`,
+      });
+      navigate("/dashboard/certificates");
+    },
+    onError: (error: Error) => {
+      toast.error("Gagal membuat sertifikat", {
+        description: error.message,
+      });
     },
   });
 
@@ -68,9 +91,17 @@ export default function LessonPage() {
       navigate("/login");
       return;
     }
-    await completeMutation.mutateAsync();
-    if (nextLesson) {
-      navigate(`/courses/${slug}/lessons/${nextLesson.slug}`);
+    try {
+      await completeMutation.mutateAsync();
+      if (nextLesson) {
+        navigate(`/courses/${slug}/lessons/${nextLesson.slug}`);
+      } else {
+        toast.success("Selamat! Semua materi selesai!", {
+          description: "Kamu bisa ambil sertifikat sekarang.",
+        });
+      }
+    } catch {
+      // error handled by onError callback
     }
   };
 
@@ -257,13 +288,22 @@ export default function LessonPage() {
                   <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
               </Button>
-            ) : (
-              <Button asChild className="bg-foreground text-background hover:bg-foreground/90">
-                <Link to={`/courses/${slug}`}>
-                  Kembali ke Course
-                </Link>
-              </Button>
-            )}
+            ) : isCompleted ? (
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={() => certMutation.mutate(course.id)}
+                  disabled={certMutation.isPending}
+                  className="bg-foreground text-background hover:bg-foreground/90 gap-2"
+                >
+                  {certMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <GraduationCap className="h-4 w-4" />
+                  )}
+                  Ambil Sertifikat
+                </Button>
+              </div>
+            ) : null}
           </div>
 
           <div className="mt-8 flex gap-3">

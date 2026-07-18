@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { db } from "../db/index.js";
 import { courses, lessons, userProgress } from "../db/schema.js";
-import { eq, and, asc, count } from "drizzle-orm";
+import { eq, and, asc, count, inArray } from "drizzle-orm";
 import { authMiddleware } from "../middleware/auth.js";
 
 const app = new Hono<{ Variables: { user: any; session: any } }>();
@@ -118,7 +118,7 @@ app.get("/:slug/progress", authMiddleware, async (c) => {
     .where(eq(lessons.courseId, course.id));
 
   const lessonIds = courseLessons.map((l) => l.id);
-  if (lessonIds.length === 0) return c.json({ completed: 0, total: 0, progress: [] });
+  if (lessonIds.length === 0) return c.json({ completed: 0, total: 0, completedLessonIds: [] });
 
   const progress = await db
     .select()
@@ -126,20 +126,17 @@ app.get("/:slug/progress", authMiddleware, async (c) => {
     .where(
       and(
         eq(userProgress.userId, userId),
-        eq(userProgress.completed, true)
+        eq(userProgress.completed, true),
+        inArray(userProgress.lessonId, lessonIds)
       )
     );
 
-  const completedLessonIds = new Set(
-    progress
-      .filter((p) => lessonIds.includes(p.lessonId))
-      .map((p) => p.lessonId)
-  );
+  const completedLessonIds = progress.map((p) => p.lessonId);
 
   return c.json({
-    completed: completedLessonIds.size,
+    completed: completedLessonIds.length,
     total: lessonIds.length,
-    completedLessonIds: [...completedLessonIds],
+    completedLessonIds,
   });
 });
 
