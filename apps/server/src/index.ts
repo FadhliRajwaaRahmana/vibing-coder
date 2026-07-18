@@ -15,10 +15,16 @@ import swaggerRoutes from "./routes/swagger.js";
 const app = new Hono();
 
 app.use("*", logger());
+const allowedOrigins = [
+  process.env.FRONTEND_URL || "http://localhost:5173",
+  "https://www.vibing-coder.my.id",
+  "https://vibing-coder.my.id",
+];
+
 app.use(
   "*",
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: (origin) => (allowedOrigins.includes(origin) ? origin : allowedOrigins[0]),
     credentials: true,
   })
 );
