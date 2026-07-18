@@ -1,7 +1,6 @@
 {
   "name": "kelas-fullstack",
   "private": true,
-  "type": "module",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -15,8 +14,19 @@
     "db:migrate": "npm -w apps/server run db:migrate",
     "db:seed": "npm -w apps/server run db:seed"
   },
+  "dependencies": {
+    "@hono/node-server": "^1.14.1",
+    "better-auth": "^1.2.8",
+    "dotenv": "^16.5.0",
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.7.10",
+    "marked": "^15.0.8",
+    "nanoid": "^5.1.5",
+    "pg": "^8.16.0"
+  },
   "devDependencies": {
     "concurrently": "^9.1.2",
+    "esbuild": "^0.25.0",
     "typescript": "^5.7.3"
   }
 }

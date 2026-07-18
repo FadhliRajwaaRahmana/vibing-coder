@@ -1,4 +1,2 @@
-import { handle } from "hono/vercel";
-import app from "../apps/server/src/index.js";
-
-export default handle(app);
+const handler = require("./_server.cjs");
+module.exports = typeof handler.default === "function" ? handler.default : handler;
