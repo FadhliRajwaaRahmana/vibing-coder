@@ -9,6 +9,7 @@ import {
   jsonb,
   uniqueIndex,
   index,
+  serial,
 } from "drizzle-orm/pg-core";
 
 // ============ Better Auth Tables ============
@@ -134,6 +135,7 @@ export const discussions = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
     parentId: uuid("parent_id"),
+    title: varchar("title", { length: 255 }),
     content: text("content").notNull(),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
@@ -141,6 +143,27 @@ export const discussions = pgTable(
   (table) => [
     index("discussions_course_idx").on(table.courseId),
     index("discussions_lesson_idx").on(table.lessonId),
+  ]
+);
+
+export const discussionVotes = pgTable(
+  "discussion_votes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    discussionId: uuid("discussion_id")
+      .notNull()
+      .references(() => discussions.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("discussion_votes_user_discussion_idx").on(
+      table.userId,
+      table.discussionId
+    ),
+    index("discussion_votes_discussion_idx").on(table.discussionId),
   ]
 );
 

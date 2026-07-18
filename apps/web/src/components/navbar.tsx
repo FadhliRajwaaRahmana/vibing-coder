@@ -21,7 +21,7 @@ const navLinks = [
   { to: "/", label: "Home", icon: Home },
   { to: "/courses", label: "Courses", icon: BookOpen },
   { to: "/#roadmap", label: "Roadmap", icon: Map },
-  { to: "/courses", label: "Community", icon: Users, hash: "community" },
+  { to: "/community", label: "Community", icon: Users },
 ];
 
 export function Navbar() {

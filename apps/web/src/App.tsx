@@ -17,6 +17,7 @@ import DiscussionsPage from "@/pages/discussions";
 import QuizPage from "@/pages/quiz";
 import CertificatesPage from "@/pages/certificates";
 import VerifyCertificatePage from "@/pages/verify-certificate";
+import CommunityPage from "@/pages/community";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -67,6 +68,7 @@ function AppRoutes() {
           element={<AppLayout hideFooter><LessonPage /></AppLayout>}
         />
         <Route path="/courses/:slug/discussions" element={<AppLayout><DiscussionsPage /></AppLayout>} />
+        <Route path="/community" element={<AppLayout><CommunityPage /></AppLayout>} />
         <Route
           path="/courses/:slug/lessons/:lessonSlug/quiz"
           element={<AppLayout><QuizPage /></AppLayout>}

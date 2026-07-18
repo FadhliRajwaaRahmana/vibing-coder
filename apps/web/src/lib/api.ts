@@ -28,6 +28,31 @@ export const api = {
     getProgress: (slug: string) => request<any>(`/courses/${slug}/progress`),
   },
   discussions: {
+    list: (params?: {
+      courseId?: string;
+      sort?: string;
+      page?: number;
+      limit?: number;
+      userId?: string;
+    }) => {
+      const q = new URLSearchParams();
+      if (params?.courseId) q.set("courseId", params.courseId);
+      if (params?.sort) q.set("sort", params.sort);
+      if (params?.page) q.set("page", String(params.page));
+      if (params?.limit) q.set("limit", String(params.limit));
+      const qs = q.toString();
+      const headers: Record<string, string> = {};
+      if (params?.userId) headers["x-user-id"] = params.userId;
+      return request<{
+        posts: any[];
+        pagination: {
+          page: number;
+          limit: number;
+          total: number;
+          totalPages: number;
+        };
+      }>(`/discussions${qs ? `?${qs}` : ""}`, { headers });
+    },
     getByCourse: (courseId: string, lessonId?: string) =>
       request<any[]>(
         `/discussions/course/${courseId}${lessonId ? `?lessonId=${lessonId}` : ""}`
@@ -36,11 +61,16 @@ export const api = {
       courseId: string;
       lessonId?: string;
       parentId?: string;
+      title?: string;
       content: string;
     }) =>
       request<any>("/discussions", {
         method: "POST",
         body: JSON.stringify(data),
+      }),
+    vote: (id: string) =>
+      request<{ voted: boolean }>(`/discussions/${id}/vote`, {
+        method: "POST",
       }),
     delete: (id: string) =>
       request<any>(`/discussions/${id}`, { method: "DELETE" }),
