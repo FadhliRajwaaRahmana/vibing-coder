@@ -118,7 +118,7 @@ app.get("/course/:courseId", async (c) => {
 
   const condition = lessonId
     ? and(eq(discussions.courseId, courseId), eq(discussions.lessonId, lessonId))
-    : and(eq(discussions.courseId, courseId), isNull(discussions.parentId));
+    : eq(discussions.courseId, courseId);
 
   const posts = await db
     .select({
